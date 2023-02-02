@@ -1,8 +1,11 @@
 import express from "express";
+import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import userRoutes from "./routes/users";
 
 const app = express();
+app.use(bodyParser.json());
 dotenv.config();
 
 const connect = () => {
@@ -16,6 +19,8 @@ const connect = () => {
       throw err;
     });
 };
+
+app.use("/api/users", userRoutes);
 
 app.listen(8000, () => {
   connect();

@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRoutes from "./routes/users";
+import authRoutes from "./routes/auths";
 
 const app = express();
 app.use(bodyParser.json());
@@ -20,7 +20,7 @@ const connect = () => {
     });
 };
 
-app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(8000, () => {
   connect();

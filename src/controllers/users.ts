@@ -56,8 +56,68 @@ export const update = async (
       res.status(200).json(userData);
     } else {
       res.status(403);
-      return next(new Error("can only update your own account."));
+      return next(new Error("can only update your own account"));
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const follow = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (req.params.id === req.body.id) {
+      res.status(403);
+      return next(new Error("you cant follow yourself"));
+    }
+    const user = await User.findById(req.params.id);
+    const currentUser = await User.findById(req.body.id);
+
+    if (!user?.followers.includes(currentUser?._id)) {
+      await user?.updateOne({
+        $push: { followers: currentUser?._id },
+      });
+      await currentUser?.updateOne({
+        $push: { following: user?._id },
+      });
+    } else {
+      res.status(403).json("you already followed the user");
+    }
+
+    res.status(200).json("following the user");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const unfollow = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (req.params.id === req.body.id) {
+      res.status(403);
+      return next(new Error("you cant unfollow yourself"));
+    }
+    const user = await User.findById(req.params.id);
+    const currentUser = await User.findById(req.body.id);
+
+    if (user?.followers.includes(currentUser?._id)) {
+      await user?.updateOne({
+        $pull: { followers: currentUser?._id },
+      });
+      await currentUser?.updateOne({
+        $pull: { following: user?._id },
+      });
+    } else {
+      res.status(403).json("you already unfollowed the user");
+    }
+
+    res.status(200).json("unfollowed the user");
   } catch (err) {
     next(err);
   }

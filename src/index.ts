@@ -1,11 +1,11 @@
 import express from "express";
-import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auths";
+import userRoutes from "./routes/users";
 
 const app = express();
-app.use(bodyParser.json());
 dotenv.config();
 
 const connect = () => {
@@ -20,7 +20,10 @@ const connect = () => {
     });
 };
 
+app.use(express.json());
+app.use(cookieParser());
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.listen(8000, () => {
   connect();

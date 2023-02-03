@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User";
+import Tweet from "../models/Tweet";
 
 export const getUser = async (
   req: Request,
@@ -132,6 +133,7 @@ export const deleteUser = async (
     if (req.params.id === req.body.id) {
       await User.findByIdAndDelete(req.body.id);
       // TODO: delete user id in follower's following field and following's follower field.
+      await Tweet.remove({ userId: req.body.id });
 
       res.status(200).json("user deleted");
     } else {

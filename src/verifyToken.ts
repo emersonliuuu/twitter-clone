@@ -3,8 +3,7 @@ import jwt from "jsonwebtoken";
 
 interface ITokenPayload {
   iat: number;
-  exp: number;
-  sub: string;
+  id: string;
 }
 
 const DEFAULT = "h5oNhVmLhM2UreaZLsLLF3H";
@@ -33,12 +32,12 @@ export const verifyToken = (
       return next(new Error("Invalid JWT token"));
     }
 
-    const { sub } = decoded as ITokenPayload;
+    const { id } = decoded as ITokenPayload;
 
-    // @ts-ignore // TODO
-    req.user = {
-      id: sub,
-    };
+    // TODO: Check the correct usage for assigning id:
+    // in tutorial: req.user = {id};
+    req.body.id = id;
+
     return next();
   });
 };

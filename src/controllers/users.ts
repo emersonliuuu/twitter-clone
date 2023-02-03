@@ -122,3 +122,23 @@ export const unfollow = async (
     next(err);
   }
 };
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (req.params.id === req.body.id) {
+      await User.findByIdAndDelete(req.body.id);
+      // TODO: delete user id in follower's following field and following's follower field.
+
+      res.status(200).json("user deleted");
+    } else {
+      res.status(403);
+      return next(new Error("you can only delete your own account"));
+    }
+  } catch (err) {
+    next(err);
+  }
+};

@@ -21,7 +21,7 @@ export const signup = async (
     const { password, ...savedUserData } = newUser._doc; // TODO
 
     const _ = process.env.JWT ?? DEFAULT;
-    const token = jwt.sign({ id: newUser._id, pwd: password }, _);
+    const token = jwt.sign({ id: newUser._id }, _);
 
     res
       .cookie("access_token", token, { httpOnly: true })
@@ -53,7 +53,7 @@ export const signin = async (
     // @ts-ignore
     const { password, ...userData } = user._doc;
     const _ = process.env.JWT ?? DEFAULT;
-    const token = jwt.sign({ id: user._id, pwd: password }, _);
+    const token = jwt.sign({ id: user._id }, _);
 
     res
       .cookie("access_token", token, { httpOnly: true })

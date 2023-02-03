@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auths";
 import userRoutes from "./routes/users";
+import tweetRoutes from "./routes/tweets";
 
 const app = express();
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/tweets", tweetRoutes);
 
 app.listen(8000, () => {
   connect();

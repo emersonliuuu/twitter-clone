@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Tweet from "../models/Tweet";
+import User from "../models/User";
 
 export const createTweet = async (
   req: Request,
@@ -32,12 +33,14 @@ export const likeOrDisLike = async (
     if (tweet?.likes.includes(req.body.id)) {
       await tweet.updateOne({
         $pull: { likes: req.body.id },
+        $inc: { likesCount: -1 },
       });
 
       res.status(200).json("disliked tweet");
     } else {
       await tweet.updateOne({
         $push: { likes: req.body.id },
+        $inc: { likesCount: 1 },
       });
 
       res.status(200).json("liked tweet");
@@ -66,6 +69,56 @@ export const deleteTweet = async (
       res.status(403);
       return next(new Error("you can only delete your own tweets"));
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAllTimelineTweets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const userTweets = await Tweet.find({ userId: req.params.id });
+    const followingTweets = await Promise.all(
+      // @ts-ignore // TODO
+      user?.following.map((followingId) => Tweet.find({ userId: followingId }))
+    );
+    // @ts-ignore // TODO
+    res.status(200).json(userTweets.concat(...followingTweets));
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAllUserTweets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userTweets = await Tweet.find({ userId: req.params.id }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(userTweets);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getExploreTweets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const tweets = await Tweet.find({ likes: { $exists: true } }).sort({
+      likesCount: -1,
+    });
+
+    res.status(200).json(tweets);
   } catch (err) {
     next(err);
   }

@@ -4,9 +4,20 @@ import HomeIcon from "@mui/icons-material/Home";
 import TagIcon from "@mui/icons-material/Tag";
 import PersonIcon from "@mui/icons-material/Person";
 
-const handleLogout = () => {};
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { logout } from "../../redux/userSlice";
 
 const LeftSidebar = () => {
+  const { currentUser } = useSelector(
+    (state: RootState) => state.persistedReducer.user
+  );
+
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <div className="flex flex-col h-full md:h-[90vh] justify-between mr-6">
       <div className="mt-6 flex flex-col space-y-4">
@@ -34,8 +45,10 @@ const LeftSidebar = () => {
 
       <div className="flex justify-between">
         <div>
-          <p className="font-bold">Username</p>
-          <p className="font-semibold from-neutral-600">@UserHandle</p>
+          <p className="font-bold">{currentUser?.username}</p>
+          <p className="font-semibold from-neutral-600">
+            @{currentUser?.username}
+          </p>
         </div>
 
         <div>
